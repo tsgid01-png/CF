@@ -3,403 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caminho Fácil - Overlay Inteligente</title>
+    <title>TSM - Contemplação Facilitada</title>
     <style>
         :root {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --success: #22c55e;
-            --danger: #ef4444;
+            --primary-blue: #0f4c81;
+            --accent-green: #10b981;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --card-bg: #ffffff;
+            --highlight: #fef3c7;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; }
-        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; }
-
-        .container { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
-        h1 { font-size: 24px; margin-bottom: 8px; text-align: center; color: #fff; }
-        p.subtitle { color: var(--text-muted); font-size: 14px; text-align: center; margin-bottom: 24px; }
-
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-        .input-field { width: 100%; padding: 12px 16px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-size: 14px; outline: none; transition: border-color 0.2s; user-select: text; }
-        .input-field:focus { border-color: var(--accent); }
-
-        .btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
-        .btn:hover { background: var(--accent-hover); }
-        .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-muted); margin-top: 10px; }
-        .btn-secondary:hover { background: rgba(255,255,255,0.05); color: #fff; }
-
-        #app-dashboard { display: none; text-align: center; }
-        .permission-card { background: var(--bg-main); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin: 20px 0; text-align: left; }
-        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-        .status-badge.active { background: rgba(34, 197, 94, 0.2); color: var(--success); }
-
-        /* CONTAINER DO BOTÃO PRINCIPAL E MENU EXPANSÍVEL */
-        #floating-container {
-            position: fixed;
-            bottom: 40px;
-            right: 40px;
-            display: none;
-            z-index: 9999;
-            touch-action: none;
-        }
-
-        #floating-overlay-btn {
-            width: 56px;
-            height: 56px;
-            background: var(--accent);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: grab;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5);
-            border: 2px solid #fff;
-            position: relative;
-            z-index: 2;
-        }
-        #floating-overlay-btn:active { cursor: grabbing; }
-
-        /* MENU DE OPÇÕES EXPANSÍVEL (ESTILO REC SCREEN) */
-        #floating-menu {
-            position: absolute;
-            bottom: 70px;
-            right: 4px;
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-            z-index: 1;
-        }
-        #floating-container.expanded #floating-menu {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
-        }
-
-        .menu-sub-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            color: white;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-            transition: transform 0.2s;
         }
-        .menu-sub-btn:hover { transform: scale(1.1); }
-        .btn-ai { background: var(--success); }
-        .btn-tool { background: #d97706; }
-        .btn-home { background: var(--accent); }
-        .btn-close { background: var(--danger); }
 
-        /* JANELA DE TEXTO / DIÁLOGO FLUTUANTE DA IA */
-        #overlay-modal {
-            position: fixed;
-            bottom: 110px;
-            right: 30px;
-            width: 340px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
             padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            display: none;
-            z-index: 10000;
-            text-align: left;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-sizing: border-box;
         }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .modal-header h3 { font-size: 16px; color: #fff; }
-        .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; }
-        
-        .chat-response {
-            background: var(--bg-main);
-            border: 1px solid var(--border);
+
+        h1 {
+            color: var(--primary-blue);
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        /* Sistema de Abas Principal */
+        .tabs {
+            display: flex;
             border-radius: 8px;
-            padding: 10px;
-            height: 120px;
-            overflow-y: auto;
-            font-size: 13px;
-            margin-bottom: 12px;
-            color: var(--text-muted);
-            line-height: 1.4;
-            user-select: text;
+            overflow: hidden;
+            border: 2px solid var(--primary-blue);
+            margin-bottom: 20px;
         }
-        .voice-btn { background: var(--success); display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-        .voice-btn.recording { background: var(--danger); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 4px;
+            background: #fff;
+            color: var(--primary-blue);
+            font-weight: bold;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        input[type="number"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        textarea {
+            height: 90px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        button.action-btn {
+            width: 100%;
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: opacity 0.2s;
+        }
+
+        button.action-btn:active { transform: scale(0.98); }
+        button.action-btn:hover { opacity: 0.9; }
+        button.action-btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
+
+        /* Visor de suspense para sorteios gerais */
+        .visor-suspense {
+            margin-top: 20px;
+            text-align: center;
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            display: none;
+            border: 3px dashed var(--primary-blue);
+            word-break: break-all;
+        }
+
+        .visor-suspense.vencedor {
+            background-color: var(--highlight);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            font-size: 2.2rem;
+            border-style: solid;
+        }
+
+        /* Tabela para Sorteio Direcionado */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-whatsapp {
+            background-color: #25d366;
+            margin-top: 12px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- TELA DE LOGIN E CADASTRO -->
-    <div class="container" id="login-container">
-        <h1>Caminho Fácil</h1>
-        <p class="subtitle">Guia inteligente por IA sobreposta</p>
-        
-        <div class="input-group">
-            <label>Nome do Usuário</label>
-            <input type="text" id="user-name" class="input-field" placeholder="Digite seu nome...">
-        </div>
-        <div class="input-group">
-            <label>E-mail de Acesso</label>
-            <input type="email" id="user-email" class="input-field" placeholder="seu@email.com">
+    <div class="container">
+        <h1>TSM • Contemplação</h1>
+        <p class="subtitle">Sorteios e Distribuições Inteligentes</p>
+
+        <!-- Navegação por Abas -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="mudarAba('numerico')">🔢 Numérico</button>
+            <button class="tab-btn" onclick="mudarAba('rifa')">🎟️ Bolão / Rifa</button>
+            <button class="tab-btn" onclick="mudarAba('direcionado')">🎯 Direcionado</button>
         </div>
 
-        <button class="btn" onclick="saveUserAndEnter()">Salvar e Entrar</button>
-    </div>
-
-    <!-- PAINEL PRINCIPAL DO APP -->
-    <div class="container" id="app-dashboard">
-        <h1>Caminho Fácil</h1>
-        <p class="subtitle" id="welcome-msg">Bem-vindo!</p>
-
-        <div class="permission-card">
-            <h3 style="font-size: 15px; margin-bottom: 6px;">Permissão de Sobreposição (Overlay)</h3>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Necessário para exibir o botão flutuante sobre outros aplicativos.</p>
-            <span id="overlay-status" class="status-badge">Desativada</span>
-            <button class="btn btn-secondary" onclick="togglePermission()">Conceder Permissão</button>
+        <!-- ABA 1: Sorteio Numérico -->
+        <div id="aba-numerico" class="tab-content active">
+            <div class="form-group">
+                <label>Mínimo:</label>
+                <input type="number" id="num-min" value="1">
+            </div>
+            <div class="form-group">
+                <label>Máximo:</label>
+                <input type="number" id="num-max" value="75">
+            </div>
+            <button class="action-btn" onclick="executarSorteioNumerico()">Sortear Número 🎲</button>
+            <div id="visor-numerico" class="visor-suspense"></div>
         </div>
 
-        <button class="btn" onclick="activateAIOverlay()">Ativar e Minimizar App</button>
-        <button class="btn btn-secondary" onclick="logout()">Sair / Trocar Usuário</button>
-    </div>
-
-    <!-- BOTÃO FLUTUANTE COM MENU EXPANSÍVEL -->
-    <div id="floating-container">
-        <div id="floating-menu">
-            <button class="menu-sub-btn btn-ai" onclick="toggleOverlayModal()" title="Abrir Chat IA">💬</button>
-            <button class="menu-sub-btn btn-tool" onclick="alert('Ferramentas ativadas!')" title="Ferramentas">🛠️</button>
-            <button class="menu-sub-btn btn-home" onclick="openDashboard()" title="Painel do App">🏠</button>
-            <button class="menu-sub-btn btn-close" onclick="closeFloatingMenu()" title="Fechar Menu">✕</button>
-        </div>
-        <button id="floating-overlay-btn" title="Arraste ou clique para expandir opções">💬</button>
-    </div>
-
-    <!-- JANELA DE TEXTO / DIÁLOGO FLUTUANTE DA IA -->
-    <div id="overlay-modal">
-        <div class="modal-header">
-            <h3>Caminho Fácil IA</h3>
-            <button class="close-btn" onclick="toggleOverlayModal()">×</button>
-        </div>
-        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">O que você deseja entender nesta tela?</p>
-        
-        <div class="chat-response" id="ai-response-box">
-            Olá! Toque no microfone abaixo ou digite sua dúvida para que eu explique o passo a passo desta tela.
+        <!-- ABA 2: Sorteio de Bolão / Rifa (Ponderado) -->
+        <div id="aba-rifa" class="tab-content">
+            <div class="form-group">
+                <label>Nomes e Cotas/Bilhetes (Nome, Qtd):</label>
+                <textarea id="lista-rifa" placeholder="Ex:&#10;Ana, 10&#10;Beto, 3&#10;Carlos, 1">Ana, 5
+Beto, 2
+Carlos, 1</textarea>
+                <div class="hint">Quem tiver mais cotas/bilhetes tem mais chances proporcionalmente.</div>
+            </div>
+            <button class="action-btn" onclick="executarSorteioRifa()">Sortear Bolão / Rifa 🎟️</button>
+            <div id="visor-rifa" class="visor-suspense"></div>
         </div>
 
-        <div class="input-group" style="margin-bottom: 8px;">
-            <input type="text" id="user-query-input" class="input-field" placeholder="Digite sua solicitação..." onkeypress="if(event.key === 'Enter') sendUserQuery()">
+        <!-- ABA 3: Sorteio Direcionado -->
+        <div id="aba-direcionado" class="tab-content">
+            <div class="form-group">
+                <label>Participantes (um por linha):</label>
+                <textarea id="dir-participantes">Rodrigo
+João
+Pedro</textarea>
+            </div>
+            <div class="form-group">
+                <label>Itens / Números (um por linha):</label>
+                <textarea id="dir-itens">Número 01
+Número 02
+Número 03</textarea>
+            </div>
+            <button class="action-btn" onclick="executarSorteioDirecionado()">Distribuir Justo 🎯</button>
+            
+            <div id="resultado-direcionado" style="display:none;">
+                <table>
+                    <thead>
+                        <tr><th>Participante</th><th>Atribuição</th></tr>
+                    </thead>
+                    <tbody id="corpo-tabela-dir"></tbody>
+                </table>
+                <button class="action-btn btn-whatsapp" onclick="copiarWhatsApp()">📲 Copiar para WhatsApp</button>
+            </div>
         </div>
-        
-        <div style="display: flex; gap: 6px; margin-bottom: 6px;">
-            <button class="btn voice-btn" id="voice-rec-btn" onclick="startVoiceCommand()" style="margin-top:0; flex: 1;">🎙️ Falar</button>
-            <button class="btn" onclick="sendUserQuery()" style="margin-top:0; flex: 1;">Enviar</button>
-        </div>
-        <button class="btn btn-secondary" onclick="openDashboard()" style="margin-top: 0; width: 100%; font-size: 12px; padding: 8px;">⚙️ Abrir Configurações do App</button>
     </div>
 
     <script>
-        let currentUser = localStorage.getItem('caminho_facil_user');
-        let permissionGranted = localStorage.getItem('caminho_facil_perm') === 'true';
-
-        window.onload = function() {
-            if (currentUser) {
-                showDashboard();
-            }
-            initDraggableFAB();
-        };
-
-        function saveUserAndEnter() {
-            const name = document.getElementById('user-name').value.trim();
-            const email = document.getElementById('user-email').value.trim();
-            if (!name || !email) {
-                alert('Preencha todos os campos para continuar.');
-                return;
-            }
-            const userData = { name, email };
-            localStorage.setItem('caminho_facil_user', JSON.stringify(userData));
-            currentUser = userData;
-            showDashboard();
-        }
-
-        function showDashboard() {
-            document.getElementById('login-container').style.display = 'none';
-            document.getElementById('app-dashboard').style.display = 'block';
-            const data = JSON.parse(currentUser);
-            document.getElementById('welcome-msg').innerText = `Olá, ${data.name}!`;
-            updatePermissionUI();
-        }
-
-        function togglePermission() {
-            permissionGranted = !permissionGranted;
-            localStorage.setItem('caminho_facil_perm', permissionGranted);
-            updatePermissionUI();
-        }
-
-        function updatePermissionUI() {
-            const badge = document.getElementById('overlay-status');
-            const container = document.getElementById('floating-container');
-            if (permissionGranted) {
-                badge.className = 'status-badge active';
-                badge.innerText = 'Ativada';
-            } else {
-                badge.className = 'status-badge';
-                badge.innerText = 'Desativada';
-                container.style.display = 'none';
-                document.getElementById('overlay-modal').style.display = 'none';
-            }
-        }
-
-        function activateAIOverlay() {
-            if (!permissionGranted) {
-                alert('Você precisa conceder a permissão de sobreposição antes de ativar o modo flutuante.');
-                return;
-            }
-            document.getElementById('app-dashboard').style.display = 'none';
-            document.getElementById('floating-container').style.display = 'block';
-        }
-
-        function openDashboard() {
-            closeFloatingMenu();
-            document.getElementById('overlay-modal').style.display = 'none';
-            document.getElementById('floating-container').style.display = 'none';
-            document.getElementById('app-dashboard').style.display = 'block';
-        }
-
-        function closeFloatingMenu() {
-            document.getElementById('floating-container').classList.remove('expanded');
-        }
-
-        // Lógica de Arrastar e Expandir Menu
-        function initDraggableFAB() {
-            const container = document.getElementById('floating-container');
-            const fab = document.getElementById('floating-overlay-btn');
-            let isDragging = false;
-            let hasMoved = false;
-            let startX, startY, initialX, initialY;
-
-            function dragStart(e) {
-                isDragging = true;
-                hasMoved = false;
-                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-                startX = clientX;
-                startY = clientY;
-                const rect = container.getBoundingClientRect();
-                initialX = rect.left;
-                initialY = rect.top;
-            }
-
-            function drag(e) {
-                if (!isDragging) return;
-                const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-                const dx = clientX - startX;
-                const dy = clientY - startY;
-
-                if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-                    hasMoved = true;
-                }
-
-                container.style.left = (initialX + dx) + 'px';
-                container.style.top = (initialY + dy) + 'px';
-                container.style.bottom = 'auto';
-                container.style.right = 'auto';
-            }
-
-            function dragEnd() {
-                if (!isDragging) return;
-                isDragging = false;
-                if (!hasMoved) {
-                    container.classList.toggle('expanded');
-                }
-            }
-
-            fab.addEventListener('touchstart', dragStart, {passive: true});
-            window.addEventListener('touchmove', drag, {passive: true});
-            window.addEventListener('touchend', dragEnd);
-
-            fab.addEventListener('mousedown', dragStart);
-            window.addEventListener('mousemove', drag);
-            window.addEventListener('mouseup', dragEnd);
-        }
-
-        function toggleOverlayModal() {
-            closeFloatingMenu();
-            const modal = document.getElementById('overlay-modal');
-            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function sendUserQuery() {
-            const input = document.getElementById('user-query-input');
-            const query = input.value.trim();
-            if (!query) return;
-
-            const responseBox = document.getElementById('ai-response-box');
-            responseBox.innerHTML += `<br><b>Você:</b> ${query}`;
-            input.value = '';
-
-            setTimeout(() => {
-                responseBox.innerHTML += `<br><span style="color: var(--success);"><b>IA:</b> Passo a passo para "${query}": 1. Localize o menu principal; 2. Clique na opção destacada em azul; 3. Confirme a operação.</span>`;
-                responseBox.scrollTop = responseBox.scrollHeight;
-            }, 500);
-        }
-
-        function startVoiceCommand() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('Seu navegador não suporta reconhecimento de voz.');
-                return;
-            }
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'pt-BR';
+        // Função para alternar abas
+        function mudarAba(abaId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             
-            const btn = document.getElementById('voice-rec-btn');
-            btn.classList.add('recording');
-            btn.innerText = 'Ouvindo...';
-
-            recognition.onresult = function(event) {
-                const speechText = event.results[0][0].transcript;
-                document.getElementById('user-query-input').value = speechText;
-                sendUserQuery();
-            };
-
-            recognition.onerror = function() {
-                alert('Erro ao capturar voz. Tente novamente.');
-            };
-
-            recognition.onend = function() {
-                btn.classList.remove('recording');
-                btn.innerText = '🎙️ Falar';
-            };
-
-            recognition.start();
+            event.currentTarget.classList.add('active');
+            document.getElementById(`aba-${abaId}`).classList.add('active');
         }
 
-        function logout() {
-            localStorage.removeItem('caminho_facil_user');
-            localStorage.removeItem('caminho_facil_perm');
-            currentUser = null;
-            permissionGranted = false;
-            document.getElementById('floating-container').style.display = 'none';
-            document.getElementById('overlay-modal').style.display = 'none';
-            document.getElementById('app-dashboard').style.display = 'none';
-            document.getElementById('login-container').style.display = 'block';
+        // Gerador seguro criptograficamente
+        function randSeguro(min, max) {
+            const arr = new Uint32Array(1);
+            crypto.getRandomValues(arr);
+            return Math.floor(min + (max - min + 1) * (arr[0] / 0xFFFFFFFF + 1e-17));
+        }
+
+        // Fisher-Yates Shuffle para embaralhar com justiça
+        function fisherYates(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 1. Lógica Sorteio Numérico com Animação
+        function executarSorteioNumerico() {
+            const min = parseInt(document.getElementById('num-min').value);
+            const max = parseInt(document.getElementById('num-max').value);
+            if(min >= max) { alert("O máximo deve ser maior que o mínimo!"); return; }
+
+            const visor = document.getElementById('visor-numerico');
+            visor.style.display = 'block';
+            visor.classList.remove('vencedor');
+
+            let steps = 20;
+            let currentStep = 0;
+
+            function animar() {
+                if(currentStep < steps) {
+                    visor.innerText = randSeguro(min, max);
+                    currentStep++;
+                    setTimeout(animar, 60 + currentStep * 10);
+                } else {
+                    const finalNum = randSeguro(min, max);
+                    visor.innerText = "🎉 " + finalNum + " 🎉";
+                    visor.classList.add('vencedor');
+                }
+            }
+            animar();
+        }
+
+        // 2. Lógica Sorteio de Bolão / Rifa Ponderada
+        function executarSorteioRifa() {
+            const texto = document.getElementById('lista-rifa').value.trim();
+            if(!texto) { alert("Preencha a lista de nomes!"); return; }
+
+            let puxePote = [];
+            let linhas = texto.split('\n');
+            
+            for(let linha of linhas) {
+                let partes = linha.split(',');
+                let nome = partes[0].trim();
+                let qtd = partes[1] ? parseInt(partes[1].trim()) : 1;
+                if(!nome) continue;
+                if(isNaN(qtd) || qtd < 1) qtd = 1;
+                
+                for(let i = 0; i < qtd; i++) {
+                    puxePote.push(nome);
+                }
+            }
+
+            if(puxePote.length === 0) { alert("Lista inválida!"); return; }
+
+            const visor = document.getElementById('visor-rifa');
+            visor.style.display = 'block';
+            visor.classList.remove('vencedor');
+
+            let steps = 25;
+            let currentStep = 0;
+
+            function animarRifa() {
+                if(currentStep < steps) {
+                    let randIndex = randSeguro(0, puxePote.length - 1);
+                    visor.innerText = puxePote[randIndex];
+                    currentStep++;
+                    setTimeout(animarRifa, 50 + currentStep * 8);
+                } else {
+                    let vencedorFinal = puxePote[randSeguro(0, puxePote.length - 1)];
+                    visor.innerText = "🏆 " + vencedorFinal + " 🏆";
+                    visor.classList.add('vencedor');
+                }
+            }
+            animarRifa();
+        }
+
+        // 3. Lógica Sorteio Direcionado
+        let textoWhatsAppGlobal = "";
+        function executarSorteioDirecionado() {
+            const pText = document.getElementById('dir-participantes').value.trim();
+            const iText = document.getElementById('dir-itens').value.trim();
+
+            if(!pText || !iText) { alert("Preencha ambas as listas!"); return; }
+
+            let participantes = pText.split('\n').map(p => p.trim()).filter(p => p);
+            let itens = iText.split('\n').map(i => i.trim()).filter(i => i);
+
+            if(participantes.length !== itens.length) {
+                alert(`Atenção: ${participantes.length} participantes para ${itens.length} itens. As quantidades devem ser iguais!`);
+                return;
+            }
+
+            let itensEmbaralhados = fisherYates([...itens]);
+            let corpo = document.getElementById('corpo-tabela-dir');
+            corpo.innerHTML = "";
+            textoWhatsAppGlobal = "🎯 *Resultado do Sorteio TSM* 🎯\n\n";
+
+            for(let i = 0; i < participantes.length; i++) {
+                let p = participantes[i];
+                let item = itensEmbaralhados[i];
+                corpo.innerHTML += `<tr><td>👤 <strong>${p}</strong></td><td>🎯 ${item}</td></tr>`;
+                textoWhatsAppGlobal += `👤 ${p} ➔ 🎯 ${item}\n`;
+            }
+
+            document.getElementById('resultado-direcionado').style.display = 'block';
+        }
+
+        function copiarWhatsApp() {
+            navigator.clipboard.writeText(textoWhatsAppGlobal).then(() => {
+                alert("Copiado com sucesso para o WhatsApp!");
+            });
         }
     </script>
 </body>
